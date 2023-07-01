@@ -18,6 +18,7 @@ public class PrimaryResource {
     private static final Logger LOG = LoggerFactory.getLogger(PrimaryResource.class);
     @Autowired
     private EventService eventService;
+
     @GetMapping("/test")
     public ResponseEntity<String> getResponse(){
         LOG.debug("Test method invoked");
@@ -29,8 +30,10 @@ public class PrimaryResource {
         LOG.debug("SSE Emitter events");
         SseEmitter emitter = new SseEmitter();
         eventService.sendEvents(emitter);
+        LOG.debug("Events started asynchronously");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "text/event-stream");
+        headers.add("Content-Type", "text/event-stream");
+        headers.add("Connection", "keep-alive");
         return ResponseEntity.ok().headers(headers).body(emitter);
     }
 
